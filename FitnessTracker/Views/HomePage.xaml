@@ -1,0 +1,60 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FitnessTracker.Views.HomePage"
+             Title="Home">
+
+    <ScrollView>
+
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <Label
+                Text="Fitness Tracker"
+                FontSize="32"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"/>
+
+            <Frame>
+
+                <VerticalStackLayout>
+
+                    <Label
+                        Text="Weekly Workout Schedule"
+                        FontSize="20"
+                        FontAttributes="Bold"/>
+
+                    <Label Text="Monday - Lower Body"/>
+
+                    <Label Text="Tuesday - Upper Body"/>
+
+                    <Label Text="Wednesday - Rest"/>
+
+                    <Label Text="Thursday - Glutes"/>
+
+                    <Label Text="Friday - Full Body"/>
+
+                </VerticalStackLayout>
+
+            </Frame>
+
+            <Frame>
+
+                <VerticalStackLayout>
+
+                    <Label
+                        Text="Weekly Calories"
+                        FontSize="20"
+                        FontAttributes="Bold"/>
+
+                    <Label Text="Goal: 10,500 Calories"/>
+
+                    <Label Text="Track your daily calories on the Calories page."/>
+
+                </VerticalStackLayout>
+
+            </Frame>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>
