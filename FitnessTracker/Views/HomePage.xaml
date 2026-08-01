@@ -1,60 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FitnessTracker.Views.HomePage"
-             Title="Home">
+             BackgroundColor="{StaticResource PageBackgroundColor}"
+             Shell.NavBarIsVisible="False">
 
-    <ScrollView>
+    <Grid RowDefinitions="*, Auto">
 
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <!-- Scrollable Content -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="24" Padding="20">
 
-            <Label
-                Text="Fitness Tracker"
-                FontSize="32"
-                FontAttributes="Bold"
-                HorizontalOptions="Center"/>
-
-            <Frame>
-
-                <VerticalStackLayout>
-
-                    <Label
-                        Text="Weekly Workout Schedule"
-                        FontSize="20"
-                        FontAttributes="Bold"/>
-
-                    <Label Text="Monday - Lower Body"/>
-
-                    <Label Text="Tuesday - Upper Body"/>
-
-                    <Label Text="Wednesday - Rest"/>
-
-                    <Label Text="Thursday - Glutes"/>
-
-                    <Label Text="Friday - Full Body"/>
-
+                <!-- Header Section -->
+                <VerticalStackLayout Spacing="4" Margin="0,10,0,0">
+                    <Label Text="FITRACK" 
+                           FontSize="22" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource PrimaryTextColor}" />
+                    <Label Text="Elevate your physical limits" 
+                           FontSize="14" 
+                           TextColor="{StaticResource SecondaryTextColor}" />
                 </VerticalStackLayout>
 
-            </Frame>
+                <!-- Quick Start Workout Card -->
+                <Frame BackgroundColor="{StaticResource CardBackgroundColor}"
+                       BorderColor="{StaticResource CardBorderColor}"
+                       CornerRadius="16"
+                       Padding="20"
+                       HasShadow="False">
+                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
+                            <Label Text="Quick Start Workout" 
+                                   FontSize="16" 
+                                   FontAttributes="Bold" 
+                                   TextColor="{StaticResource PrimaryTextColor}" />
+                            <Label Text="Start empty routine instantly" 
+                                   FontSize="13" 
+                                   TextColor="{StaticResource SecondaryTextColor}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Row="0" Grid.Column="1" 
+                               Text=">" 
+                               FontSize="20" 
+                               TextColor="{StaticResource SecondaryTextColor}" 
+                               VerticalOptions="Center" />
+                    </Grid>
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding QuickStartCommand}" />
+                    </Frame.GestureRecognizers>
+                </Frame>
 
-            <Frame>
+                <!-- This Week Activity Card -->
+                <Frame BackgroundColor="{StaticResource CardBackgroundColor}"
+                       BorderColor="{StaticResource CardBorderColor}"
+                       CornerRadius="16"
+                       Padding="20"
+                       HasShadow="False">
+                    <VerticalStackLayout Spacing="16">
 
-                <VerticalStackLayout>
+                        <!-- Card Header -->
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="🔥" FontSize="18" VerticalOptions="Center" />
+                            <Label Grid.Column="2" Text="This Week" FontSize="14" TextColor="{StaticResource SecondaryTextColor}" VerticalOptions="Center" />
+                        </Grid>
 
-                    <Label
-                        Text="Weekly Calories"
-                        FontSize="20"
-                        FontAttributes="Bold"/>
+                        <!-- Days of the Week Collection -->
+                        <CollectionView ItemsSource="{Binding WeeklyProgress}" 
+                                        SelectionMode="None"
+                                        HeightRequest="60">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" WidthRequest="32">
+                                        <Label Text="{Binding DayLabel}" FontSize="12" TextColor="{StaticResource SecondaryTextColor}" HorizontalOptions="Center" />
 
-                    <Label Text="Goal: 10,500 Calories"/>
+                                        <!-- Dynamic Border Style based on IsCompleted -->
+                                        <Border WidthRequest="32" HeightRequest="32" StrokeShape="Ellipse">
+                                            <Border.Triggers>
+                                                <!-- Completed State -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="True">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource PrimaryTextColor}" />
+                                                    <Setter Property="Stroke" Value="Transparent" />
+                                                </DataTrigger>
+                                                <!-- Incomplete State -->
+                                                <DataTrigger TargetType="Border" Binding="{Binding IsCompleted}" Value="False">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource SurfaceColor}" />
+                                                    <Setter Property="Stroke" Value="{StaticResource CardBorderColor}" />
+                                                </DataTrigger>
+                                            </Border.Triggers>
 
-                    <Label Text="Track your daily calories on the Calories page."/>
+                                            <!-- Inner content changes based on completion -->
+                                            <ContentView>
+                                                <ContentView.Triggers>
+                                                    <DataTrigger TargetType="ContentView" Binding="{Binding IsCompleted}" Value="True">
+                                                        <Setter Property="Content">
+                                                            <Setter.Value>
+                                                                <Ellipse WidthRequest="4" HeightRequest="4" Fill="{StaticResource PageBackgroundColor}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="ContentView" Binding="{Binding IsCompleted}" Value="False">
+                                                        <Setter Property="Content">
+                                                            <Setter.Value>
+                                                                <Label Text="✓" FontSize="12" TextColor="{StaticResource PrimaryTextColor}" HorizontalOptions="Center" VerticalOptions="Center" />
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </ContentView.Triggers>
+                                            </ContentView>
+                                        </Border>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
 
-                </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
 
-            </Frame>
+                <!-- Today's Schedule Card -->
+                <Frame BackgroundColor="{StaticResource CardBackgroundColor}"
+                       BorderColor="{StaticResource CardBorderColor}"
+                       CornerRadius="16"
+                       Padding="20"
+                       HasShadow="False">
+                    <VerticalStackLayout Spacing="16">
 
-        </VerticalStackLayout>
+                        <!-- Header & Change Routine Button -->
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0" Text="TODAY'S SCHEDULE" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource SecondaryTextColor}" VerticalOptions="Center" />
+                            <Button Grid.Column="1" Text="Change Routine" Command="{Binding ChangeRoutineCommand}" FontSize="12" TextColor="{StaticResource PrimaryTextColor}" BackgroundColor="Transparent" Padding="0" HeightRequest="24" />
+                        </Grid>
 
-    </ScrollView>
+                        <!-- Estimated Duration & Exercises Summary -->
+                        <Label Text="{Binding TodayWorkoutSummary}" FontSize="13" TextColor="{StaticResource SecondaryTextColor}" />
 
+                        <!-- Exercise List Collection -->
+                        <CollectionView ItemsSource="{Binding TodayExercises}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,12">
+                                        <Label Grid.Column="0" Text="{Binding Name}" FontSize="14" TextColor="{StaticResource PrimaryTextColor}" />
+                                        <Label Grid.Column="1" Text="{Binding Details}" FontSize="14" TextColor="{StaticResource SecondaryTextColor}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <!-- Launch Button -->
+                        <Button Text="Launch Scheduled Workout"
+                                BackgroundColor="{StaticResource SurfaceColor}"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                BorderColor="{StaticResource CardBorderColor}"
+                                BorderWidth="1"
+                                CornerRadius="12"
+                                HeightRequest="48"
+                                FontAttributes="Bold"
+                                Margin="0,8,0,0"
+                                Command="{Binding LaunchWorkoutCommand}" />
+
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
 </ContentPage>
