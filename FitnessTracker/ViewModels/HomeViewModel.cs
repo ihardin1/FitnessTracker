@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FitnessTracker.Services;
+using FitnessTracker.Models;
 
 namespace FitnessTracker.ViewModels
 {
@@ -9,30 +11,31 @@ namespace FitnessTracker.ViewModels
         [ObservableProperty]
         private string todayWorkoutSummary = "Estimated: 55 mins • 3 exercises";
 
-        public ObservableCollection<DayProgressModel> WeeklyProgress { get; set; } = new();
-        public ObservableCollection<ExerciseItemModel> TodayExercises { get; set; } = new();
+        public ObservableCollection<DayProgressModel> WeeklyProgress { get; set; }
+        public ObservableCollection<ExerciseItemModel> TodayExercises { get; set; }
 
         public HomeViewModel()
         {
-            LoadMockData();
+            // Use central service collections so data can be provided by other pages/views
+            WeeklyProgress = FitnessService.WeeklyProgress;
+            TodayExercises = FitnessService.TodayExercises;
+        // initialize summary from service
+        UpdateTodaySummary(FitnessService.TodayWorkout);
+        FitnessService.OnTodayWorkoutChanged += UpdateTodaySummary;
         }
 
-        private void LoadMockData()
+    private void UpdateTodaySummary(Workout? workout)
+    {
+        if (workout == null)
         {
-            // Populate weekly days (M-S)
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = "M", IsCompleted = false });
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = "T", IsCompleted = false });
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = "W", IsCompleted = true });
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = "T", IsCompleted = false });
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = "F", IsCompleted = false });
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = "S", IsCompleted = true });
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = "S", IsCompleted = true });
-
-            // Populate today's exercise routine
-            TodayExercises.Add(new ExerciseItemModel { Name = "Barbell Bench Press", Details = "4 sets x 8-10 reps" });
-            TodayExercises.Add(new ExerciseItemModel { Name = "Incline Dumbbell Press", Details = "3 sets x 10 reps" });
-            TodayExercises.Add(new ExerciseItemModel { Name = "Overhead Press", Details = "3 sets x 8 reps" });
+            TodayWorkoutSummary = "No workout for today";
+            return;
         }
+
+        var exerciseCount = workout.Exercises?.Count ?? 0;
+        var totalSets = workout.Exercises?.Sum(e => e.Sets) ?? 0;
+        TodayWorkoutSummary = $"{exerciseCount} exercises • {totalSets} sets";
+    }
 
         [RelayCommand]
         private void QuickStart()
@@ -53,15 +56,5 @@ namespace FitnessTracker.ViewModels
         }
     }
 
-    public class DayProgressModel
-    {
-        public string DayLabel { get; set; } = string.Empty;
-        public bool IsCompleted { get; set; }
-    }
-
-    public class ExerciseItemModel
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Details { get; set; } = string.Empty;
-    }
+    // UI models moved to FitnessTracker.Models.UiModels
 }
