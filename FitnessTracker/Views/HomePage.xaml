@@ -34,7 +34,7 @@
                                    FontSize="16" 
                                    FontAttributes="Bold" 
                                    TextColor="{StaticResource PrimaryTextColor}" />
-                            <Label Text="Start empty routine instantly" 
+                            <Label Text="Build a workout for today" 
                                    FontSize="13" 
                                    TextColor="{StaticResource SecondaryTextColor}" />
                         </VerticalStackLayout>
