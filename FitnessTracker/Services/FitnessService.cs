@@ -1,166 +1,620 @@
-using FitnessTracker.Models;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System;
-using Microsoft.Maui.Dispatching;
-using Microsoft.Maui.ApplicationModel;
+using System.Text.Json;
+using FitnessTracker.Models;
 
 namespace FitnessTracker.Services;
 
 public static class FitnessService
 {
-    static FitnessService()
+   
+    private const string WorkoutsFileName = "workouts.json";
+    private const string MealsFileName = "meals.json";
+    private const string CaloriesFileName = "calories.json";
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        // initialize weekly progress for the current week
-        RefreshWeeklyProgress();
-    }
-    // Central collections for app state. Pages and viewmodels should read/update these collections.
+        WriteIndented = true,
+        PropertyNameCaseInsensitive = true
+    };
+
     public static ObservableCollection<Exercise> Exercises { get; } = new();
 
     public static ObservableCollection<Meal> Meals { get; } = new();
 
     public static ObservableCollection<CalorieEntry> Calories { get; } = new();
 
-    // UI-related collections exposed centrally so pages can populate or consume them.
+    public static ObservableCollection<Workout> Workouts { get; } = new();
+
+   
     public static ObservableCollection<DayProgressModel> WeeklyProgress { get; } = new();
 
     public static ObservableCollection<ExerciseItemModel> TodayExercises { get; } = new();
 
-    // Historical workouts and today's workout
-    public static ObservableCollection<Workout> Workouts { get; } = new();
-
     private static Workout? todayWorkout;
+
     public static Workout? TodayWorkout
     {
         get => todayWorkout;
+
         private set
         {
             todayWorkout = value;
+
             OnTodayWorkoutChanged?.Invoke(todayWorkout);
         }
     }
 
-    // Event fired when TodayWorkout changes. ViewModels/pages can subscribe to update UI.
     public static event Action<Workout?>? OnTodayWorkoutChanged;
+
     public static event Action? OnWorkoutsChanged;
+
+    public static event Action? OnCaloriesChanged;
+
+    public static event Action? OnMealsChanged;
+
+    static FitnessService()
+    {
+        LoadAllData();
+
+        RefreshTodayWorkout();
+    }
 
     public static Workout? GetWorkoutForDate(DateTime date)
     {
-        return Workouts.FirstOrDefault(w => w.Date.Date == date.Date);
+        return Workouts.FirstOrDefault(
+            workout => workout.Date.Date == date.Date);
     }
 
     public static void StartWorkoutForToday(Workout workout)
     {
-        if (workout == null) return;
+        if (workout == null)
+        {
+            return;
+        }
+
         workout.Date = DateTime.Today;
         workout.IsCompleted = false;
-        TodayWorkout = workout;
-        // Add to history (keep last instance for today if exists)
-        var existing = GetWorkoutForDate(DateTime.Today);
-        if (existing != null)
+
+        Workout? existingWorkout =
+            GetWorkoutForDate(DateTime.Today);
+
+        if (existingWorkout != null)
         {
-            Workouts.Remove(existing);
+            Workouts.Remove(existingWorkout);
         }
+
         Workouts.Add(workout);
 
-        // Refresh weekly progress and notify
-        RefreshWeeklyProgress();
-        OnWorkoutsChanged?.Invoke();
+        TodayWorkout = workout;
 
-        // Populate TodayExercises UI models
-        TodayExercises.Clear();
-        foreach (var ex in workout.Exercises)
-        {
-            TodayExercises.Add(new ExerciseItemModel { Name = ex.Name, Details = $"{ex.Sets} sets x {ex.Reps} reps" });
-        }
+        RefreshTodayExercises();
+        RefreshWeeklyProgress();
+
+        SaveWorkouts();
+
+        OnWorkoutsChanged?.Invoke();
     }
 
-    public static void AddExerciseToToday(Exercise ex)
+    public static void AddExerciseToToday(Exercise exercise)
     {
-        if (ex == null) return;
+        if (exercise == null)
+        {
+            return;
+        }
+
         if (TodayWorkout == null)
         {
-            // create a default workout if none exists
-            var w = new Workout { WorkoutName = "Today", Date = DateTime.Today };
-            StartWorkoutForToday(w);
+            Workout newWorkout = new()
+            {
+                WorkoutName = "Today's Workout",
+                Date = DateTime.Today,
+                IsCompleted = false
+            };
+
+            StartWorkoutForToday(newWorkout);
         }
 
-        ex.Date = DateTime.Today;
-        TodayWorkout!.Exercises.Add(ex);
-        Exercises.Add(ex);
-        TodayExercises.Add(new ExerciseItemModel { Name = ex.Name, Details = $"{ex.Sets} sets x {ex.Reps} reps" });
+        exercise.Date = DateTime.Today;
+
+        TodayWorkout!.Exercises.Add(exercise);
+
+        Exercises.Add(exercise);
+
+        RefreshTodayExercises();
         RefreshWeeklyProgress();
+
+        SaveWorkouts();
+
+        OnTodayWorkoutChanged?.Invoke(TodayWorkout);
         OnWorkoutsChanged?.Invoke();
     }
 
-    public static void UpdateExerciseInToday(Exercise updated)
+    public static void UpdateExerciseInToday(
+        Exercise originalExercise,
+        Exercise updatedExercise)
     {
-        if (updated == null || TodayWorkout == null) return;
-        var existing = TodayWorkout.Exercises.FirstOrDefault(e => e.Name == updated.Name);
-        if (existing != null)
+        if (originalExercise == null ||
+            updatedExercise == null ||
+            TodayWorkout == null)
         {
-            existing.Weight = updated.Weight;
-            existing.Reps = updated.Reps;
-            existing.Sets = updated.Sets;
-            existing.IsCompleted = updated.IsCompleted;
+            return;
         }
 
-        // Refresh TodayExercises UI model entry
-        var ui = TodayExercises.FirstOrDefault(t => t.Name == updated.Name);
-        if (ui != null)
+        Exercise? existingExercise =
+            TodayWorkout.Exercises.FirstOrDefault(
+                exercise => exercise == originalExercise);
+
+        if (existingExercise == null)
         {
-            ui.Details = $"{updated.Sets} sets x {updated.Reps} reps";
+            existingExercise =
+                TodayWorkout.Exercises.FirstOrDefault(
+                    exercise =>
+                        exercise.Name == originalExercise.Name);
         }
+
+        if (existingExercise == null)
+        {
+            return;
+        }
+
+        existingExercise.Name = updatedExercise.Name;
+        existingExercise.Weight = updatedExercise.Weight;
+        existingExercise.Reps = updatedExercise.Reps;
+        existingExercise.Sets = updatedExercise.Sets;
+        existingExercise.Date = updatedExercise.Date;
+        existingExercise.IsCompleted =
+            updatedExercise.IsCompleted;
+
+        RefreshTodayExercises();
+        RefreshWeeklyProgress();
+
+        SaveWorkouts();
+
+        OnTodayWorkoutChanged?.Invoke(TodayWorkout);
+        OnWorkoutsChanged?.Invoke();
+    }
+
+   
+    public static void UpdateExerciseInToday(
+        Exercise updatedExercise)
+    {
+        if (updatedExercise == null ||
+            TodayWorkout == null)
+        {
+            return;
+        }
+
+        Exercise? existingExercise =
+            TodayWorkout.Exercises.FirstOrDefault(
+                exercise =>
+                    exercise.Name == updatedExercise.Name);
+
+        if (existingExercise == null)
+        {
+            return;
+        }
+
+        existingExercise.Weight = updatedExercise.Weight;
+        existingExercise.Reps = updatedExercise.Reps;
+        existingExercise.Sets = updatedExercise.Sets;
+        existingExercise.IsCompleted =
+            updatedExercise.IsCompleted;
+
+        RefreshTodayExercises();
+        RefreshWeeklyProgress();
+
+        SaveWorkouts();
+
+        OnTodayWorkoutChanged?.Invoke(TodayWorkout);
+        OnWorkoutsChanged?.Invoke();
+    }
+
+    public static void DeleteExerciseFromToday(
+        Exercise exercise)
+    {
+        if (exercise == null ||
+            TodayWorkout == null)
+        {
+            return;
+        }
+
+        TodayWorkout.Exercises.Remove(exercise);
+
+        Exercise? savedExercise =
+            Exercises.FirstOrDefault(
+                item =>
+                    item.Name == exercise.Name &&
+                    item.Date.Date == exercise.Date.Date);
+
+        if (savedExercise != null)
+        {
+            Exercises.Remove(savedExercise);
+        }
+
+        RefreshTodayExercises();
+        RefreshWeeklyProgress();
+
+        SaveWorkouts();
+
+        OnTodayWorkoutChanged?.Invoke(TodayWorkout);
+        OnWorkoutsChanged?.Invoke();
     }
 
     public static void CompleteTodayWorkout()
     {
-        if (TodayWorkout == null) return;
-        foreach (var ex in TodayWorkout.Exercises)
-            ex.IsCompleted = true;
+        if (TodayWorkout == null)
+        {
+            return;
+        }
+
+        foreach (Exercise exercise in TodayWorkout.Exercises)
+        {
+            exercise.IsCompleted = true;
+        }
+
         TodayWorkout.IsCompleted = true;
+
+        RefreshTodayExercises();
         RefreshWeeklyProgress();
-        // Notify subscribers (TodayWorkout still available for review)
+
+        SaveWorkouts();
+
         OnTodayWorkoutChanged?.Invoke(TodayWorkout);
+        OnWorkoutsChanged?.Invoke();
+    }
+
+    public static void DeleteWorkout(Workout workout)
+    {
+        if (workout == null)
+        {
+            return;
+        }
+
+        Workouts.Remove(workout);
+
+        if (TodayWorkout == workout ||
+            workout.Date.Date == DateTime.Today)
+        {
+            TodayWorkout = null;
+        }
+
+        RebuildExerciseHistory();
+        RefreshTodayExercises();
+        RefreshWeeklyProgress();
+
+        SaveWorkouts();
+
         OnWorkoutsChanged?.Invoke();
     }
 
     public static void ClearTodayWorkout()
     {
-        if (TodayWorkout == null) return;
-        // remove from history if present
-        var existing = GetWorkoutForDate(DateTime.Today);
-        if (existing != null) Workouts.Remove(existing);
+        Workout? existingWorkout =
+            GetWorkoutForDate(DateTime.Today);
+
+        if (existingWorkout != null)
+        {
+            Workouts.Remove(existingWorkout);
+        }
 
         TodayWorkout = null;
+
+        RebuildExerciseHistory();
+
         TodayExercises.Clear();
+
         RefreshWeeklyProgress();
+
+        SaveWorkouts();
+
         OnWorkoutsChanged?.Invoke();
     }
 
-    private static void RefreshWeeklyProgress(DateTime? referenceDate = null)
-    {
-        var refDate = referenceDate ?? DateTime.Today;
-        // determine Monday as start of week
-        var diff = (7 + (refDate.DayOfWeek - DayOfWeek.Monday)) % 7;
-        var monday = refDate.Date.AddDays(-diff);
+  
 
-        WeeklyProgress.Clear();
-        for (int i = 0; i < 7; i++)
+    public static void AddCalorieEntry(
+        CalorieEntry calorieEntry)
+    {
+        if (calorieEntry == null)
         {
-            var date = monday.AddDays(i);
-            var workout = GetWorkoutForDate(date);
-            var label = date.ToString("ddd").Substring(0, 1);
-            WeeklyProgress.Add(new DayProgressModel { DayLabel = label, IsCompleted = workout?.IsCompleted ?? false });
+            return;
+        }
+
+        calorieEntry.Date = calorieEntry.Date.Date;
+
+        Calories.Add(calorieEntry);
+
+        SaveCalories();
+
+        OnCaloriesChanged?.Invoke();
+    }
+
+    public static void DeleteCalorieEntry(
+        CalorieEntry calorieEntry)
+    {
+        if (calorieEntry == null)
+        {
+            return;
+        }
+
+        Calories.Remove(calorieEntry);
+
+        SaveCalories();
+
+        OnCaloriesChanged?.Invoke();
+    }
+
+    public static int GetCaloriesForDate(
+        DateTime date)
+    {
+        return Calories
+            .Where(entry =>
+                entry.Date.Date == date.Date)
+            .Sum(entry => entry.Calories);
+    }
+
+    public static int GetCaloriesForToday()
+    {
+        return GetCaloriesForDate(DateTime.Today);
+    }
+
+   
+    public static void AddMeal(Meal meal)
+    {
+        if (meal == null)
+        {
+            return;
+        }
+
+        Meals.Add(meal);
+
+        SaveMeals();
+
+        OnMealsChanged?.Invoke();
+    }
+
+    public static void DeleteMeal(Meal meal)
+    {
+        if (meal == null)
+        {
+            return;
+        }
+
+        Meals.Remove(meal);
+
+        SaveMeals();
+
+        OnMealsChanged?.Invoke();
+    }
+
+    public static void RefreshTodayWorkout()
+    {
+        TodayWorkout =
+            GetWorkoutForDate(DateTime.Today);
+
+        RebuildExerciseHistory();
+        RefreshTodayExercises();
+        RefreshWeeklyProgress();
+
+        OnWorkoutsChanged?.Invoke();
+    }
+
+    private static void RefreshTodayExercises()
+    {
+        TodayExercises.Clear();
+
+        if (TodayWorkout == null)
+        {
+            return;
+        }
+
+        foreach (Exercise exercise
+                 in TodayWorkout.Exercises)
+        {
+            TodayExercises.Add(
+                new ExerciseItemModel
+                {
+                    Name = exercise.Name,
+
+                    Details =
+                        $"{exercise.Sets} sets × " +
+                        $"{exercise.Reps} reps • " +
+                        $"{exercise.Weight:0.#} lb"
+                });
         }
     }
 
-    // Public method to refresh today's workout and weekly progress. Call this on app resume/navigation.
-    public static void RefreshTodayWorkout()
+    private static void RefreshWeeklyProgress(
+        DateTime? referenceDate = null)
     {
-        TodayWorkout = GetWorkoutForDate(DateTime.Today);
-        RefreshWeeklyProgress();
-        OnTodayWorkoutChanged?.Invoke(TodayWorkout);
-        OnWorkoutsChanged?.Invoke();
+        DateTime selectedDate =
+            referenceDate ?? DateTime.Today;
+
+        int daysFromMonday =
+            (7 +
+             (selectedDate.DayOfWeek -
+              DayOfWeek.Monday)) % 7;
+
+        DateTime monday =
+            selectedDate.Date.AddDays(
+                -daysFromMonday);
+
+        WeeklyProgress.Clear();
+
+        for (int dayNumber = 0;
+             dayNumber < 7;
+             dayNumber++)
+        {
+            DateTime date =
+                monday.AddDays(dayNumber);
+
+            Workout? workout =
+                GetWorkoutForDate(date);
+
+            WeeklyProgress.Add(
+                new DayProgressModel
+                {
+                    DayLabel =
+                        date.ToString("ddd")[..1],
+
+                    IsCompleted =
+                        workout?.IsCompleted ?? false
+                });
+        }
+    }
+
+    private static void RebuildExerciseHistory()
+    {
+        Exercises.Clear();
+
+        foreach (Workout workout in Workouts)
+        {
+            foreach (Exercise exercise
+                     in workout.Exercises)
+            {
+                Exercises.Add(exercise);
+            }
+        }
+    }
+
+
+    public static void SaveAllData()
+    {
+        SaveWorkouts();
+        SaveMeals();
+        SaveCalories();
+    }
+
+    private static void LoadAllData()
+    {
+        LoadWorkouts();
+        LoadMeals();
+        LoadCalories();
+
+        RebuildExerciseHistory();
+    }
+
+    private static void SaveWorkouts()
+    {
+        SaveCollection(
+            WorkoutsFileName,
+            Workouts.ToList());
+    }
+
+    private static void SaveMeals()
+    {
+        SaveCollection(
+            MealsFileName,
+            Meals.ToList());
+    }
+
+    private static void SaveCalories()
+    {
+        SaveCollection(
+            CaloriesFileName,
+            Calories.ToList());
+    }
+
+    private static void LoadWorkouts()
+    {
+        List<Workout> savedWorkouts =
+            LoadCollection<Workout>(
+                WorkoutsFileName);
+
+        Workouts.Clear();
+
+        foreach (Workout workout
+                 in savedWorkouts)
+        {
+            Workouts.Add(workout);
+        }
+    }
+
+    private static void LoadMeals()
+    {
+        List<Meal> savedMeals =
+            LoadCollection<Meal>(
+                MealsFileName);
+
+        Meals.Clear();
+
+        foreach (Meal meal in savedMeals)
+        {
+            Meals.Add(meal);
+        }
+    }
+
+    private static void LoadCalories()
+    {
+        List<CalorieEntry> savedCalories =
+            LoadCollection<CalorieEntry>(
+                CaloriesFileName);
+
+        Calories.Clear();
+
+        foreach (CalorieEntry calorie
+                 in savedCalories)
+        {
+            Calories.Add(calorie);
+        }
+    }
+
+    private static void SaveCollection<T>(
+        string fileName,
+        List<T> items)
+    {
+        try
+        {
+            string filePath = Path.Combine(
+                FileSystem.AppDataDirectory,
+                fileName);
+
+            string json =
+                JsonSerializer.Serialize(
+                    items,
+                    JsonOptions);
+
+            File.WriteAllText(
+                filePath,
+                json);
+        }
+        catch (Exception exception)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Error saving {fileName}: " +
+                exception.Message);
+        }
+    }
+
+    private static List<T> LoadCollection<T>(
+        string fileName)
+    {
+        try
+        {
+            string filePath = Path.Combine(
+                FileSystem.AppDataDirectory,
+                fileName);
+
+            if (!File.Exists(filePath))
+            {
+                return new List<T>();
+            }
+
+            string json =
+                File.ReadAllText(filePath);
+
+            return JsonSerializer.Deserialize<List<T>>(
+                       json,
+                       JsonOptions)
+                   ?? new List<T>();
+        }
+        catch (Exception exception)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Error loading {fileName}: " +
+                exception.Message);
+
+            return new List<T>();
+        }
     }
 }

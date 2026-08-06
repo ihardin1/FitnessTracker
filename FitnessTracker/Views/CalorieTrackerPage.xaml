@@ -1,23 +1,437 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FitnessTracker.Views.CalorieTrackerPage"
-             Title="Calories">
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="FitnessTracker.Views.CalorieTrackerPage"
+    Title="Calories"
+    BackgroundColor="{StaticResource PageBackgroundColor}">
 
     <ScrollView>
 
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout
+            Padding="20,24,20,35"
+            Spacing="20">
 
-            <Entry
-                Placeholder="Meal Name"/>
+            <!-- Header -->
 
-            <Entry
-                Placeholder="Calories"
-                Keyboard="Numeric"/>
+            <VerticalStackLayout Spacing="4">
 
-            <DatePicker/>
+                <Label
+                    Text="Calorie Tracker"
+                    FontSize="28"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource PrimaryTextColor}" />
 
-            <Button
-                Text="Add Calories"/>
+                <Label
+                    Text="Track your daily meals and calorie intake."
+                    FontSize="14"
+                    TextColor="{StaticResource SecondaryTextColor}" />
+
+            </VerticalStackLayout>
+
+            <!-- Calorie Summary -->
+
+            <Border
+                Padding="20"
+                BackgroundColor="#191C2C"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 20">
+
+                <VerticalStackLayout Spacing="18">
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <VerticalStackLayout Spacing="3">
+
+                            <Label
+                                Text="DAILY PROGRESS"
+                                FontSize="11"
+                                FontAttributes="Bold"
+                                TextColor="#BFC3D9" />
+
+                            <Label
+                                Text="{Binding CaloriesRemaining, StringFormat='{0} calories remaining'}"
+                                FontSize="21"
+                                FontAttributes="Bold"
+                                TextColor="White" />
+
+                        </VerticalStackLayout>
+
+                        <Label
+                            Grid.Column="1"
+                            Text="🔥"
+                            FontSize="27"
+                            VerticalOptions="Center" />
+
+                    </Grid>
+
+                    <ProgressBar
+                        Progress="{Binding CalorieProgress}"
+                        HeightRequest="9"
+                        ProgressColor="White"
+                        BackgroundColor="#3B4157" />
+
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="10">
+
+                        <VerticalStackLayout Spacing="3">
+
+                            <Label
+                                Text="{Binding CaloriesConsumed}"
+                                FontSize="22"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                Text="Consumed"
+                                FontSize="12"
+                                TextColor="#BFC3D9"
+                                HorizontalTextAlignment="Center" />
+
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Grid.Column="1"
+                            Spacing="3">
+
+                            <Label
+                                Text="{Binding DailyCalorieGoal}"
+                                FontSize="22"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                Text="Goal"
+                                FontSize="12"
+                                TextColor="#BFC3D9"
+                                HorizontalTextAlignment="Center" />
+
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Grid.Column="2"
+                            Spacing="3">
+
+                            <Label
+                                Text="{Binding CaloriesRemaining}"
+                                FontSize="22"
+                                FontAttributes="Bold"
+                                TextColor="White"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                Text="Remaining"
+                                FontSize="12"
+                                TextColor="#BFC3D9"
+                                HorizontalTextAlignment="Center" />
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <!-- Add Food Card -->
+
+            <Border
+                Padding="18"
+                BackgroundColor="{StaticResource CardBackgroundColor}"
+                Stroke="{StaticResource CardBorderColor}"
+                StrokeShape="RoundRectangle 18">
+
+                <VerticalStackLayout Spacing="15">
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <VerticalStackLayout Spacing="3">
+
+                            <Label
+                                Text="Add Food"
+                                FontSize="19"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource PrimaryTextColor}" />
+
+                            <Label
+                                Text="Log a meal or snack."
+                                FontSize="13"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                        </VerticalStackLayout>
+
+                        <Label
+                            Grid.Column="1"
+                            Text="🍽️"
+                            FontSize="25"
+                            VerticalOptions="Center" />
+
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="6">
+
+                        <Label
+                            Text="Food or Meal Name"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                        <Border
+                            Padding="12,2"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Entry
+                                Text="{Binding FoodName}"
+                                Placeholder="Example: Chicken and rice"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                PlaceholderColor="{StaticResource SecondaryTextColor}" />
+
+                        </Border>
+
+                    </VerticalStackLayout>
+
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="10">
+
+                        <VerticalStackLayout Spacing="6">
+
+                            <Label
+                                Text="Meal Type"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                            <Border
+                                Padding="8,0"
+                                BackgroundColor="{StaticResource SurfaceColor}"
+                                Stroke="{StaticResource CardBorderColor}"
+                                StrokeShape="RoundRectangle 12">
+
+                                <Picker
+                                    ItemsSource="{Binding MealTypes}"
+                                    SelectedItem="{Binding SelectedMealType}"
+                                    TextColor="{StaticResource PrimaryTextColor}"
+                                    BackgroundColor="Transparent" />
+
+                            </Border>
+
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Grid.Column="1"
+                            Spacing="6">
+
+                            <Label
+                                Text="Calories"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                            <Border
+                                Padding="12,2"
+                                BackgroundColor="{StaticResource SurfaceColor}"
+                                Stroke="{StaticResource CardBorderColor}"
+                                StrokeShape="RoundRectangle 12">
+
+                                <Entry
+                                    Text="{Binding Calories}"
+                                    Placeholder="0"
+                                    Keyboard="Numeric"
+                                    HorizontalTextAlignment="Center"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                            </Border>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="6">
+
+                        <Label
+                            Text="Date"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                        <Border
+                            Padding="8,0"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 12">
+
+                            <DatePicker
+                                Date="{Binding SelectedDate}"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="Transparent" />
+
+                        </Border>
+
+                    </VerticalStackLayout>
+
+                    <Button
+                        Text="+ Add Calories"
+                        Command="{Binding AddCaloriesCommand}"
+                        HeightRequest="50"
+                        CornerRadius="14"
+                        FontAttributes="Bold"
+                        BackgroundColor="#191C2C"
+                        TextColor="White" />
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <!-- Daily Entries -->
+
+            <Grid ColumnDefinitions="*,Auto">
+
+                <Label
+                    Text="Daily Entries"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                <Label
+                    Grid.Column="1"
+                    Text="{Binding CaloriesConsumed, StringFormat='{0} calories'}"
+                    FontSize="13"
+                    VerticalOptions="Center"
+                    TextColor="{StaticResource SecondaryTextColor}" />
+
+            </Grid>
+
+            <CollectionView
+                ItemsSource="{Binding TodayEntries}"
+                SelectionMode="None">
+
+                <CollectionView.EmptyView>
+
+                    <Border
+                        Padding="22"
+                        BackgroundColor="{StaticResource CardBackgroundColor}"
+                        Stroke="{StaticResource CardBorderColor}"
+                        StrokeShape="RoundRectangle 18">
+
+                        <VerticalStackLayout
+                            Spacing="7"
+                            HorizontalOptions="Center">
+
+                            <Label
+                                Text="🥗"
+                                FontSize="28"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                Text="No calories logged"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                HorizontalTextAlignment="Center"
+                                TextColor="{StaticResource PrimaryTextColor}" />
+
+                            <Label
+                                Text="Add your first meal using the form above."
+                                FontSize="13"
+                                HorizontalTextAlignment="Center"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                        </VerticalStackLayout>
+
+                    </Border>
+
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+
+                    <DataTemplate>
+
+                        <Border
+                            Padding="16"
+                            Margin="0,0,0,12"
+                            BackgroundColor="{StaticResource CardBackgroundColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 17">
+
+                            <Grid
+                                ColumnDefinitions="Auto,*,Auto"
+                                RowDefinitions="Auto,Auto">
+
+                                <Border
+                                    Grid.RowSpan="2"
+                                    WidthRequest="42"
+                                    HeightRequest="42"
+                                    BackgroundColor="{StaticResource SurfaceColor}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 12">
+
+                                    <Label
+                                        Text="🍴"
+                                        FontSize="19"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center" />
+
+                                </Border>
+
+                                <Label
+                                    Grid.Column="1"
+                                    Margin="12,0,0,0"
+                                    Text="{Binding FoodName}"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="12,0,0,0"
+                                    Text="{Binding MealType}"
+                                    FontSize="12"
+                                    TextColor="{StaticResource SecondaryTextColor}" />
+
+                                <VerticalStackLayout
+                                    Grid.Column="2"
+                                    Grid.RowSpan="2"
+                                    Spacing="3"
+                                    VerticalOptions="Center">
+
+                                    <Label
+                                        Text="{Binding Calories, StringFormat='{0} cal'}"
+                                        FontSize="15"
+                                        FontAttributes="Bold"
+                                        HorizontalTextAlignment="End"
+                                        TextColor="{StaticResource PrimaryTextColor}" />
+
+                                    <Button
+                                        Text="Delete"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteEntryCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Padding="8,2"
+                                        HeightRequest="30"
+                                        FontSize="11"
+                                        CornerRadius="9"
+                                        BackgroundColor="#FDE8E8"
+                                        TextColor="#A83A3A" />
+
+                                </VerticalStackLayout>
+
+                            </Grid>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
 
         </VerticalStackLayout>
 

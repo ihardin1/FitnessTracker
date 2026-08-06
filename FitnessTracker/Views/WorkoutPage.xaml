@@ -1,12 +1,525 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="FitnessTracker.Views.WorkoutPage"
-             Title="WorkoutPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="FitnessTracker.Views.WorkoutPage"
+    Title="Workout"
+    BackgroundColor="{StaticResource PageBackgroundColor}">
+
+    <ScrollView>
+
+        <VerticalStackLayout
+            Padding="20,24,20,35"
+            Spacing="20">
+
+            <!-- Header -->
+
+            <VerticalStackLayout Spacing="4">
+
+                <Label
+                    Text="Today's Workout"
+                    FontSize="28"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                <Label
+                    Text="Build your workout and track every set."
+                    FontSize="14"
+                    TextColor="{StaticResource SecondaryTextColor}" />
+
+            </VerticalStackLayout>
+
+            <!-- Add Exercise Card -->
+
+            <Border
+                Padding="18"
+                BackgroundColor="{StaticResource CardBackgroundColor}"
+                Stroke="{StaticResource CardBorderColor}"
+                StrokeShape="RoundRectangle 18">
+
+                <VerticalStackLayout Spacing="15">
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <VerticalStackLayout Spacing="3">
+
+                            <Label
+                                Text="Add Exercise"
+                                FontSize="19"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource PrimaryTextColor}" />
+
+                            <Label
+                                Text="Enter your exercise details below."
+                                FontSize="13"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                        </VerticalStackLayout>
+
+                        <Label
+                            Grid.Column="1"
+                            Text="🏋️"
+                            FontSize="25"
+                            VerticalOptions="Center" />
+
+                    </Grid>
+
+                    <!-- Exercise name -->
+
+                    <VerticalStackLayout Spacing="6">
+
+                        <Label
+                            Text="Exercise Name"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                        <Border
+                            Padding="12,2"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Entry
+                                Text="{Binding ExerciseName}"
+                                Placeholder="Example: Bench Press"
+                                PlaceholderColor="{StaticResource SecondaryTextColor}"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="Transparent" />
+
+                        </Border>
+
+                    </VerticalStackLayout>
+
+                    <!-- Weight, sets and reps -->
+
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="10">
+
+                        <VerticalStackLayout Spacing="6">
+
+                            <Label
+                                Text="Weight"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                            <Border
+                                Padding="10,2"
+                                BackgroundColor="{StaticResource SurfaceColor}"
+                                Stroke="{StaticResource CardBorderColor}"
+                                StrokeShape="RoundRectangle 12">
+
+                                <Entry
+                                    Text="{Binding Weight}"
+                                    Placeholder="0"
+                                    Keyboard="Numeric"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="{StaticResource PrimaryTextColor}"
+                                    BackgroundColor="Transparent" />
+
+                            </Border>
+
+                            <Label
+                                Text="lb"
+                                FontSize="11"
+                                HorizontalTextAlignment="Center"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Grid.Column="1"
+                            Spacing="6">
+
+                            <Label
+                                Text="Sets"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                            <Border
+                                Padding="10,2"
+                                BackgroundColor="{StaticResource SurfaceColor}"
+                                Stroke="{StaticResource CardBorderColor}"
+                                StrokeShape="RoundRectangle 12">
+
+                                <Entry
+                                    Text="{Binding Sets}"
+                                    Keyboard="Numeric"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="{StaticResource PrimaryTextColor}"
+                                    BackgroundColor="Transparent" />
+
+                            </Border>
+
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Grid.Column="2"
+                            Spacing="6">
+
+                            <Label
+                                Text="Reps"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                            <Border
+                                Padding="10,2"
+                                BackgroundColor="{StaticResource SurfaceColor}"
+                                Stroke="{StaticResource CardBorderColor}"
+                                StrokeShape="RoundRectangle 12">
+
+                                <Entry
+                                    Text="{Binding Reps}"
+                                    Keyboard="Numeric"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="{StaticResource PrimaryTextColor}"
+                                    BackgroundColor="Transparent" />
+
+                            </Border>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <Button
+                        Text="+ Add Exercise"
+                        Command="{Binding AddExerciseCommand}"
+                        HeightRequest="50"
+                        CornerRadius="14"
+                        FontAttributes="Bold"
+                        BackgroundColor="#191C2C"
+                        TextColor="White" />
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <!-- Summary Card -->
+
+            <Border
+                Padding="18"
+                BackgroundColor="#191C2C"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 18">
+
+                <VerticalStackLayout Spacing="15">
+
+                    <Label
+                        Text="Workout Summary"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="White" />
+
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="10">
+
+                        <VerticalStackLayout Spacing="4">
+
+                            <Label
+                                Text="{Binding TotalExercises}"
+                                FontSize="23"
+                                FontAttributes="Bold"
+                                HorizontalTextAlignment="Center"
+                                TextColor="White" />
+
+                            <Label
+                                Text="Exercises"
+                                FontSize="12"
+                                HorizontalTextAlignment="Center"
+                                TextColor="#BFC3D9" />
+
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Grid.Column="1"
+                            Spacing="4">
+
+                            <Label
+                                Text="{Binding TotalSets}"
+                                FontSize="23"
+                                FontAttributes="Bold"
+                                HorizontalTextAlignment="Center"
+                                TextColor="White" />
+
+                            <Label
+                                Text="Sets"
+                                FontSize="12"
+                                HorizontalTextAlignment="Center"
+                                TextColor="#BFC3D9" />
+
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout
+                            Grid.Column="2"
+                            Spacing="4">
+
+                            <Label
+                                Text="{Binding TotalVolume, StringFormat='{0:N0}'}"
+                                FontSize="23"
+                                FontAttributes="Bold"
+                                HorizontalTextAlignment="Center"
+                                TextColor="White" />
+
+                            <Label
+                                Text="Volume"
+                                FontSize="12"
+                                HorizontalTextAlignment="Center"
+                                TextColor="#BFC3D9" />
+
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                </VerticalStackLayout>
+
+            </Border>
+
+            <!-- Exercise List -->
+
+            <VerticalStackLayout Spacing="12">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <Label
+                        Text="Exercises"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource PrimaryTextColor}" />
+
+                    <Label
+                        Grid.Column="1"
+                        Text="{Binding TotalExercises, StringFormat='{0} added'}"
+                        FontSize="13"
+                        VerticalOptions="Center"
+                        TextColor="{StaticResource SecondaryTextColor}" />
+
+                </Grid>
+
+                <CollectionView
+                    ItemsSource="{Binding Exercises}"
+                    SelectionMode="None">
+
+                    <CollectionView.EmptyView>
+
+                        <Border
+                            Padding="22"
+                            BackgroundColor="{StaticResource CardBackgroundColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 18">
+
+                            <VerticalStackLayout
+                                Spacing="7"
+                                HorizontalOptions="Center">
+
+                                <Label
+                                    Text="💪"
+                                    FontSize="28"
+                                    HorizontalTextAlignment="Center" />
+
+                                <Label
+                                    Text="No exercises added"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                                <Label
+                                    Text="Add your first exercise using the form above."
+                                    FontSize="13"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="{StaticResource SecondaryTextColor}" />
+
+                            </VerticalStackLayout>
+
+                        </Border>
+
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+
+                        <DataTemplate>
+
+                            <Border
+                                Padding="16"
+                                Margin="0,0,0,12"
+                                BackgroundColor="{StaticResource CardBackgroundColor}"
+                                Stroke="{StaticResource CardBorderColor}"
+                                StrokeShape="RoundRectangle 17">
+
+                                <Grid
+                                    RowDefinitions="Auto,Auto,Auto"
+                                    ColumnDefinitions="*,Auto"
+                                    RowSpacing="12">
+
+                                    <!-- Exercise title -->
+
+                                    <VerticalStackLayout Spacing="3">
+
+                                        <Label
+                                            Text="{Binding Name}"
+                                            FontSize="17"
+                                            FontAttributes="Bold"
+                                            TextColor="{StaticResource PrimaryTextColor}" />
+
+                                        <Label
+                                            Text="{Binding Date, StringFormat='{0:MMM d, yyyy}'}"
+                                            FontSize="12"
+                                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                                    </VerticalStackLayout>
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="Delete"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteExerciseCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Padding="12,5"
+                                        HeightRequest="34"
+                                        FontSize="12"
+                                        CornerRadius="10"
+                                        BackgroundColor="#FDE8E8"
+                                        TextColor="#A83A3A" />
+
+                                    <!-- Exercise stats -->
+
+                                    <Grid
+                                        Grid.Row="1"
+                                        Grid.ColumnSpan="2"
+                                        ColumnDefinitions="*,*,*"
+                                        ColumnSpacing="8">
+
+                                        <Border
+                                            Padding="10"
+                                            BackgroundColor="{StaticResource SurfaceColor}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 12">
+
+                                            <VerticalStackLayout Spacing="3">
+
+                                                <Label
+                                                    Text="{Binding Weight, StringFormat='{0:0.#} lb'}"
+                                                    FontSize="15"
+                                                    FontAttributes="Bold"
+                                                    HorizontalTextAlignment="Center"
+                                                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                                                <Label
+                                                    Text="Weight"
+                                                    FontSize="11"
+                                                    HorizontalTextAlignment="Center"
+                                                    TextColor="{StaticResource SecondaryTextColor}" />
+
+                                            </VerticalStackLayout>
+
+                                        </Border>
+
+                                        <Border
+                                            Grid.Column="1"
+                                            Padding="10"
+                                            BackgroundColor="{StaticResource SurfaceColor}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 12">
+
+                                            <VerticalStackLayout Spacing="3">
+
+                                                <Label
+                                                    Text="{Binding Sets}"
+                                                    FontSize="15"
+                                                    FontAttributes="Bold"
+                                                    HorizontalTextAlignment="Center"
+                                                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                                                <Label
+                                                    Text="Sets"
+                                                    FontSize="11"
+                                                    HorizontalTextAlignment="Center"
+                                                    TextColor="{StaticResource SecondaryTextColor}" />
+
+                                            </VerticalStackLayout>
+
+                                        </Border>
+
+                                        <Border
+                                            Grid.Column="2"
+                                            Padding="10"
+                                            BackgroundColor="{StaticResource SurfaceColor}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 12">
+
+                                            <VerticalStackLayout Spacing="3">
+
+                                                <Label
+                                                    Text="{Binding Reps}"
+                                                    FontSize="15"
+                                                    FontAttributes="Bold"
+                                                    HorizontalTextAlignment="Center"
+                                                    TextColor="{StaticResource PrimaryTextColor}" />
+
+                                                <Label
+                                                    Text="Reps"
+                                                    FontSize="11"
+                                                    HorizontalTextAlignment="Center"
+                                                    TextColor="{StaticResource SecondaryTextColor}" />
+
+                                            </VerticalStackLayout>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                    <!-- Volume -->
+
+                                    <Grid
+                                        Grid.Row="2"
+                                        Grid.ColumnSpan="2"
+                                        ColumnDefinitions="Auto,*">
+
+                                        <Label
+                                            Text="Total volume:"
+                                            FontSize="12"
+                                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding Weight, StringFormat='{0:0.#} lb per rep'}"
+                                            FontSize="12"
+                                            HorizontalTextAlignment="End"
+                                            TextColor="{StaticResource PrimaryTextColor}" />
+
+                                    </Grid>
+
+                                </Grid>
+
+                            </Border>
+
+                        </DataTemplate>
+
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+            </VerticalStackLayout>
+
+            <!-- Finish Workout -->
+
+            <Button
+                Text="✓ Finish Workout"
+                Command="{Binding FinishWorkoutCommand}"
+                HeightRequest="54"
+                CornerRadius="15"
+                FontSize="16"
+                FontAttributes="Bold"
+                BackgroundColor="#191C2C"
+                TextColor="White" />
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
 </ContentPage>

@@ -1,22 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:views="clr-namespace:FitnessTracker.Views"
-       x:Class="FitnessTracker.AppShell"
-       TabBarBackgroundColor="#FFFFFF"
-       TabBarForegroundColor="#1F2937"
-       TabBarUnselectedColor="#9CA3AF">
+<Shell
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:FitnessTracker.Views"
+    x:Class="FitnessTracker.AppShell"
+    TabBarBackgroundColor="#FFFFFF"
+    TabBarForegroundColor="#1F2937"
+    TabBarUnselectedColor="#9CA3AF">
 
     <TabBar>
-        <Tab Title="Home" Icon="home.png">
-            <ShellContent ContentTemplate="{DataTemplate views:HomePage}" />
+
+        <Tab
+            Title="Home"
+            Icon="home.png">
+
+            <ShellContent
+                Route="HomePage"
+                ContentTemplate="{DataTemplate views:HomePage}" />
+
         </Tab>
-        <Tab Title="Workouts" Icon="workouts.png">
-            <ShellContent ContentTemplate="{DataTemplate views:WorkoutPage}" />
+
+        <Tab
+            Title="Workouts"
+            Icon="workouts.png">
+
+            <ShellContent
+                Route="WorkoutPage"
+                ContentTemplate="{DataTemplate views:WorkoutPage}" />
+
         </Tab>
-        <Tab Title="Progress" Icon="progress.png">
-            <ShellContent ContentTemplate="{DataTemplate views:ProgressPage}" />
+
+        <Tab Title="Calories">
+
+            <ShellContent
+                Route="CalorieTrackerPage"
+                ContentTemplate="{DataTemplate views:CalorieTrackerPage}" />
+
+        </Tab>
+
+        <Tab
+            Title="Progress"
+            Icon="progress.png">
+
+            <ShellContent
+                Route="ProgressPage"
+                ContentTemplate="{DataTemplate views:ProgressPage}" />
+
+        </Tab>
+        <Tab Title="Meals">
+
+            <ShellContent
+        Route="MealsPage"
+        ContentTemplate="{DataTemplate views:MealsPage}" />
+
         </Tab>
     </TabBar>
 
