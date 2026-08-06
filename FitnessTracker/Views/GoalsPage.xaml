@@ -176,17 +176,17 @@
                                     <Grid
                                         ColumnDefinitions="*,*,*,*">
                                         <Label
-                                            Text="Goal Type"
+                                            Text="Goal Type:"
                                             TextColor="{DynamicResource PrimaryTextColor}"
                                             FontSize="14"
                                             Grid.Column="0"/>
                                         <Label
-                                            Text="Target"
+                                            Text="Target:"
                                             TextColor="{DynamicResource PrimaryTextColor}"
                                             FontSize="14"
                                             Grid.Column="1"/>
                                         <Label
-                                            Text="Timeframe"
+                                            Text="Timeframe:"
                                             TextColor="{DynamicResource PrimaryTextColor}"
                                             FontSize="14"
                                             Grid.Column="2"/>

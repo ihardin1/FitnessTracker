@@ -39,6 +39,14 @@
                 ContentTemplate="{DataTemplate views:CalorieTrackerPage}" />
 
         </Tab>
+        
+        <Tab Title="Meals">
+
+            <ShellContent
+        Route="MealsPage"
+        ContentTemplate="{DataTemplate views:MealsPage}" />
+
+        </Tab>
 
         <Tab
             Title="Progress"
@@ -49,13 +57,7 @@
                 ContentTemplate="{DataTemplate views:ProgressPage}" />
 
         </Tab>
-        <Tab Title="Meals">
-
-            <ShellContent
-        Route="MealsPage"
-        ContentTemplate="{DataTemplate views:MealsPage}" />
-
-        </Tab>
+        
         <Tab
             Title="Goals"
             Icon="goals.png">
