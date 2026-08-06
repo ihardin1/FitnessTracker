@@ -30,6 +30,100 @@
 
             </VerticalStackLayout>
 
+            <!-- Rest Timer -->
+
+            <Border
+                Padding="12"
+                BackgroundColor="{StaticResource CardBackgroundColor}"
+                Stroke="{StaticResource CardBorderColor}"
+                StrokeShape="RoundRectangle 12">
+
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="Rest Timer"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource PrimaryTextColor}" />
+
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+
+                        <VerticalStackLayout>
+                            <Label
+                                Text="Duration (seconds)"
+                                FontSize="12"
+                                TextColor="{StaticResource SecondaryTextColor}" />
+
+                            <Border
+                                Padding="8"
+                                BackgroundColor="{StaticResource SurfaceColor}"
+                                Stroke="{StaticResource CardBorderColor}"
+                                StrokeShape="RoundRectangle 8">
+
+                                <Entry
+                                    Text="{Binding RestDuration}"
+                                    Keyboard="Numeric"
+                                    WidthRequest="100"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="{StaticResource PrimaryTextColor}"
+                                    BackgroundColor="Transparent" />
+
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+                            <Label
+                                Text="Remaining"
+                                FontSize="12"
+                                TextColor="{StaticResource SecondaryTextColor}"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                Text="{Binding RestRemainingDisplay}"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6" HorizontalOptions="End" VerticalOptions="Center">
+                            <Button
+                                Text="Start"
+                                Command="{Binding StartRestCommand}"
+                                HeightRequest="44"
+                                WidthRequest="90"
+                                CornerRadius="12"
+                                BackgroundColor="#191C2C"
+                                TextColor="White">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsResting}" Value="True">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+
+                            <Button
+                                Text="Stop"
+                                Command="{Binding StopRestCommand}"
+                                HeightRequest="44"
+                                WidthRequest="90"
+                                CornerRadius="12"
+                                BackgroundColor="#6B6F7A"
+                                TextColor="White">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsResting}" Value="False">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </VerticalStackLayout>
+
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+
+            </Border>
+
             <!-- Add Exercise Card -->
 
             <Border

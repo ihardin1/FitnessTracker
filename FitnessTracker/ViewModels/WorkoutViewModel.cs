@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Timers;
+using Microsoft.Maui.ApplicationModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FitnessTracker.Models;
@@ -42,6 +44,73 @@ public partial class WorkoutViewModel : ObservableObject
 
         FitnessService.OnWorkoutsChanged += Refresh;
         FitnessService.OnTodayWorkoutChanged += OnTodayWorkoutChanged;
+    }
+
+    // Rest timer implementation
+    private System.Timers.Timer? restTimer;
+
+    [ObservableProperty]
+    private int restDuration = 60; // seconds default
+
+    [ObservableProperty]
+    private int restRemaining;
+
+    [ObservableProperty]
+    private bool isResting;
+
+    public string RestRemainingDisplay => TimeSpan.FromSeconds(RestRemaining).ToString(@"mm\:ss");
+
+    [RelayCommand]
+    private void StartRest()
+    {
+        if (RestDuration <= 0)
+        {
+            // ignore invalid durations
+            return;
+        }
+
+        RestRemaining = RestDuration;
+        IsResting = true;
+
+        restTimer?.Stop();
+        restTimer = new System.Timers.Timer(1000);
+        restTimer.Elapsed += OnRestTimerElapsed;
+        restTimer.AutoReset = true;
+        restTimer.Start();
+        OnPropertyChanged(nameof(RestRemainingDisplay));
+    }
+
+    private void OnRestTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        // update on main thread
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (RestRemaining > 0)
+            {
+                RestRemaining -= 1;
+                OnPropertyChanged(nameof(RestRemainingDisplay));
+            }
+
+            if (RestRemaining <= 0)
+            {
+                StopRestInternal();
+            }
+        });
+    }
+
+    private void StopRestInternal()
+    {
+        restTimer?.Stop();
+        restTimer?.Dispose();
+        restTimer = null;
+        IsResting = false;
+        OnPropertyChanged(nameof(RestRemainingDisplay));
+    }
+
+    [RelayCommand]
+    private void StopRest()
+    {
+        StopRestInternal();
     }
 
     private void OnTodayWorkoutChanged(Workout? workout)
