@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FitnessTracker.Views.GoalsPage"
+             Title="GoalsPage">
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="20,24,20,35"
+            Spacing="20"
+            BackgroundColor="{StaticResource SurfaceColor}">
+            <!-- Header -->
+            <VerticalStackLayout
+                Spacing="4">
+                <Label Text="Goals" 
+                       FontSize="28" 
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource PrimaryTextColor}" />
+                <Label Text="Set your fitness goals!" 
+                       FontSize="14"
+                       TextColor="{StaticResource PrimaryTextColor}" />
+            </VerticalStackLayout>
+            
+            <!-- Add Goal Section -->
+            <Border
+                Padding="8,0"
+                BackgroundColor="{StaticResource CardBackgroundColor}"
+                Stroke="{StaticResource CardBorderColor}"
+                StrokeShape="RoundRectangle 12">
+                <Grid
+                    ColumnDefinitions="*,*,*"
+                    RowDefinitions="*,*"
+                    ColumnSpacing="10"
+                    RowSpacing="10">
+                    <!-- Goal Type -->
+                    <VerticalStackLayout Spacing="6">
+
+                        <Label
+                            Text="Goal Type"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                        <Border
+                            Padding="8,0"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Picker
+                                ItemsSource="{Binding GoalTypes}"
+                                SelectedItem="{Binding SelectedGoalType}"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="Transparent" />
+
+                        </Border>
+
+                    </VerticalStackLayout>
+                    
+                    <!-- Goal -->
+                    <VerticalStackLayout
+                        Grid.Column="1"
+                        Spacing="6">
+
+                        <Label
+                            Text="Goal"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                        <Border
+                            Padding="12,2"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Entry
+                                Text="{Binding Goal}"
+                                Placeholder="0"
+                                Keyboard="Numeric"
+                                HorizontalTextAlignment="Center"
+                                BackgroundColor="Transparent"
+                                TextColor="{StaticResource PrimaryTextColor}" />
+
+                        </Border>
+
+                    </VerticalStackLayout>
+
+                    <!-- Time Frame -->
+                    <VerticalStackLayout Spacing="6"
+                                         Grid.Column="2">
+
+                        <Label
+                            Text="Timeframe"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                        <Border
+                            Padding="8,0"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Picker
+                                ItemsSource="{Binding TimeFrames}"
+                                SelectedItem="{Binding SelectedTimeFrame}"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="Transparent" />
+
+                        </Border>
+
+                    </VerticalStackLayout>
+                    <Button
+                        Text="+ Add Goal"
+                        Command="{Binding AddGoalCommand}"
+                        HeightRequest="50"
+                        CornerRadius="14"
+                        FontAttributes="Bold"
+                        BackgroundColor="#191C2C"
+                        TextColor="White" 
+                        Grid.Row="1"
+                        Grid.ColumnSpan="3"/>
+                </Grid>
+            
+            
+            <!-- Add Goal Button -->
+                
+            </Border>
+            <!-- Current Goals -->
+            <VerticalStackLayout Spacing="12">
+                <!-- Header -->
+                <VerticalStackLayout
+                    Spacing="4">
+                    <Label Text="Saved Goals" 
+                       FontSize="28" 
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource PrimaryTextColor}"/>
+                    <Label Text="{Binding Goals.Count, StringFormat='{0} goals'}" 
+                       FontSize="14" 
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource PrimaryTextColor}"/>
+                </VerticalStackLayout>
+                
+                <!-- Goals -->
+                <CollectionView
+                    ItemsSource="{Binding Goals}"
+                    SelectionMode="None">
+                    <!-- Template for 0 Goals -->
+                    <CollectionView.EmptyView>
+                        <Border
+                            Padding="22"
+                            BackgroundColor="{StaticResource CardBackgroundColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 18">
+                            <VerticalStackLayout
+                                Spacing="6"
+                                HorizontalOptions="Center">
+                                <Label
+                                    Text="No goals added"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    HorizontalTextAlignment="Center"
+                                    TextColor="{StaticResource PrimaryTextColor}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </CollectionView.EmptyView>
+                    <!-- Template for all Goals -->
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Padding="22"
+                                BackgroundColor="{StaticResource CardBackgroundColor}"
+                                Stroke="{StaticResource CardBorderColor}">
+                                <!-- Goal Information -->
+                                <VerticalStackLayout>
+                                    <Grid
+                                        ColumnDefinitions="*,*,*,*">
+                                        <Label
+                                            Text="Goal Type"
+                                            TextColor="{DynamicResource PrimaryTextColor}"
+                                            FontSize="24"
+                                            Grid.Column="0"/>
+                                        <Label
+                                            Text="Target"
+                                            TextColor="{DynamicResource PrimaryTextColor}"
+                                            FontSize="24"
+                                            Grid.Column="1"/>
+                                        <Label
+                                            Text="Timeframe"
+                                            TextColor="{DynamicResource PrimaryTextColor}"
+                                            FontSize="24"
+                                            Grid.Column="2"/>
+
+                                    </Grid>
+                                    <Grid
+                                        ColumnDefinitions="*,*,*,*">
+                                
+                                        <!-- Goal Type -->
+                                        <Label
+                                            Text="{Binding GoalType}"
+                                            TextColor="{DynamicResource PrimaryTextColor}"
+                                            FontSize="14"
+                                            Grid.Column="0"/>
+                                        <!-- Goal Description -->
+                                        <Label
+                                            Text="{Binding GoalDisplay}"
+                                            TextColor="{DynamicResource PrimaryTextColor}"
+                                            FontSize="14"
+                                            Grid.Column="1"/>
+                                        <!--Goal Timeframe-->
+                                        <Label
+                                            Text="{Binding TimeFrame}"
+                                            TextColor="{DynamicResource PrimaryTextColor}"
+                                            FontSize="14"
+                                            Grid.Column="2"/>
+                                        <!-- Goal Delete Button -->
+                                        <Button
+                                            Text="X"
+                                            TextColor="Red"
+                                            BackgroundColor="{DynamicResource CardBackgroundColor}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteGoalCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Grid.Column="3"/>
+                                    </Grid>
+                                    <Label
+                                        Text="{Binding CreatedDate, StringFormat='Created Goal On: {0:MM/dd/yyyy}'}"
+                                        TextColor="{DynamicResource PrimaryTextColor}"
+                                        FontSize="12"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

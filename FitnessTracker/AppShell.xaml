@@ -55,6 +55,15 @@
         ContentTemplate="{DataTemplate views:MealsPage}" />
 
         </Tab>
+        <Tab
+            Title="Goals"
+            Icon="goals.png">
+
+            <ShellContent
+                Route="GoalsPage"
+                ContentTemplate="{DataTemplate views:GoalsPage}" />  
+
+        </Tab>
     </TabBar>
 
 </Shell>

@@ -10,6 +10,7 @@ public static class FitnessService
     private const string WorkoutsFileName = "workouts.json";
     private const string MealsFileName = "meals.json";
     private const string CaloriesFileName = "calories.json";
+    private const string GoalsFileName = "goals.json";
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -25,7 +26,8 @@ public static class FitnessService
 
     public static ObservableCollection<Workout> Workouts { get; } = new();
 
-   
+    public static ObservableCollection<Goal> Goals { get; } = new();
+
     public static ObservableCollection<DayProgressModel> WeeklyProgress { get; } = new();
 
     public static ObservableCollection<ExerciseItemModel> TodayExercises { get; } = new();
@@ -51,6 +53,8 @@ public static class FitnessService
     public static event Action? OnCaloriesChanged;
 
     public static event Action? OnMealsChanged;
+
+    public static event Action? OnGoalsChanged;
 
     static FitnessService()
     {
@@ -399,6 +403,22 @@ public static class FitnessService
         OnWorkoutsChanged?.Invoke();
     }
 
+    public static void AddGoal(Goal goal)
+    {
+        if (goal == null) return;
+        Goals.Add(goal);
+        SaveGoals();
+        OnGoalsChanged?.Invoke();
+    }
+
+    public static void DeleteGoal(Goal goal)
+    {
+        if (goal == null) return;
+        Goals.Remove(goal);
+        SaveGoals();
+        OnGoalsChanged?.Invoke();
+    }
+
     private static void RefreshTodayExercises()
     {
         TodayExercises.Clear();
@@ -483,6 +503,7 @@ public static class FitnessService
         SaveWorkouts();
         SaveMeals();
         SaveCalories();
+        SaveGoals();
     }
 
     private static void LoadAllData()
@@ -490,7 +511,7 @@ public static class FitnessService
         LoadWorkouts();
         LoadMeals();
         LoadCalories();
-
+        LoadGoals();
         RebuildExerciseHistory();
     }
 
@@ -513,6 +534,13 @@ public static class FitnessService
         SaveCollection(
             CaloriesFileName,
             Calories.ToList());
+    }
+
+    private static void SaveGoals()
+    {
+        SaveCollection(
+            GoalsFileName,
+            Goals.ToList());
     }
 
     private static void LoadWorkouts()
@@ -556,6 +584,18 @@ public static class FitnessService
                  in savedCalories)
         {
             Calories.Add(calorie);
+        }
+    }
+
+    private static void LoadGoals()
+    {
+        List<Goal> savedGoals =
+            LoadCollection<Goal>(
+                GoalsFileName);
+        Goals.Clear();
+        foreach (Goal goal in savedGoals)
+        {
+            Goals.Add(goal);
         }
     }
 
