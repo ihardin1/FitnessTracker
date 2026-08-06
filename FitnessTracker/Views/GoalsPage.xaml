@@ -178,17 +178,17 @@
                                         <Label
                                             Text="Goal Type"
                                             TextColor="{DynamicResource PrimaryTextColor}"
-                                            FontSize="24"
+                                            FontSize="14"
                                             Grid.Column="0"/>
                                         <Label
                                             Text="Target"
                                             TextColor="{DynamicResource PrimaryTextColor}"
-                                            FontSize="24"
+                                            FontSize="14"
                                             Grid.Column="1"/>
                                         <Label
                                             Text="Timeframe"
                                             TextColor="{DynamicResource PrimaryTextColor}"
-                                            FontSize="24"
+                                            FontSize="14"
                                             Grid.Column="2"/>
 
                                     </Grid>
