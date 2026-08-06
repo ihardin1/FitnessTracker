@@ -18,6 +18,9 @@ public partial class CalorieTrackerViewModel : ObservableObject
     private int calories;
 
     [ObservableProperty]
+    private Meal? selectedMeal;
+
+    [ObservableProperty]
     private DateTime selectedDate = DateTime.Today;
 
     [ObservableProperty]
@@ -44,11 +47,25 @@ public partial class CalorieTrackerViewModel : ObservableObject
     public ObservableCollection<CalorieEntry> TodayEntries { get; } =
         new();
 
+    public ObservableCollection<Meal> Meals =>
+        FitnessService.Meals;
+
     public CalorieTrackerViewModel()
     {
         Refresh();
 
         FitnessService.OnCaloriesChanged += Refresh;
+    }
+
+    partial void OnSelectedMealChanged(Meal? value)
+    {
+        if (value == null)
+        {
+            return;
+        }
+
+        FoodName = value.Name;
+        Calories = value.Calories;
     }
 
     partial void OnSelectedDateChanged(DateTime value)
@@ -133,6 +150,7 @@ public partial class CalorieTrackerViewModel : ObservableObject
 
         FoodName = string.Empty;
         Calories = 0;
+        SelectedMeal = null;
 
         Refresh();
     }

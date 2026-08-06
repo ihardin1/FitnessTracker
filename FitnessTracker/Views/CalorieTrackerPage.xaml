@@ -195,6 +195,28 @@
 
                         </Border>
 
+
+                        <Label
+                            Text="Saved Meals (optional)"
+                            FontSize="12"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource SecondaryTextColor}" />
+
+                        <Border
+                            Padding="8,0"
+                            BackgroundColor="{StaticResource SurfaceColor}"
+                            Stroke="{StaticResource CardBorderColor}"
+                            StrokeShape="RoundRectangle 12">
+
+                            <Picker
+                                ItemsSource="{Binding Meals}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedMeal}"
+                                TextColor="{StaticResource PrimaryTextColor}"
+                                BackgroundColor="Transparent" />
+
+                        </Border>
+
                     </VerticalStackLayout>
 
                     <Grid
